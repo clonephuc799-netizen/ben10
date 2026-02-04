@@ -1,0 +1,7 @@
+node_modules
+package-lock.json
+auth-cache
+config.json
+config.json.bak
+log
+test
