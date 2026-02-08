@@ -30,6 +30,57 @@ function translateEntityName(key) {
 }
 
 /**
+ * Processes a rawtext item and returns the translated text
+ * @param {Object} item - Rawtext item (can have 'text' or 'translate' field)
+ * @returns {string} Translated text
+ */
+function processRawtextItem(item) {
+  if (item.text) {
+    // Check if text is a translation key (starts with %)
+    if (item.text.startsWith('%')) {
+      const translationKey = item.text.substring(1); // Remove leading %
+      const template = TRANSLATION_MESSAGES[translationKey];
+      return template || item.text;
+    }
+    return item.text;
+  }
+  if (item.translate) {
+    const translationKey = item.translate;
+    const template = TRANSLATION_MESSAGES[translationKey];
+
+    if (template) {
+      let result = template;
+
+      // Handle 'with' parameter for translation
+      if (item.with) {
+        if (typeof item.with === 'string') {
+          result = result.replace('%s', item.with);
+        } else if (Array.isArray(item.with)) {
+          item.with.forEach((param) => {
+            if (typeof param === 'string') {
+              result = result.replace('%s', param);
+            } else if (param.rawtext && Array.isArray(param.rawtext)) {
+              const withText = param.rawtext.map((subItem) => processRawtextItem(subItem)).join('');
+              result = result.replace('%s', withText);
+            }
+          });
+        } else if (item.with.rawtext && Array.isArray(item.with.rawtext)) {
+          const withText = item.with.rawtext.map((subItem) => processRawtextItem(subItem)).join('');
+          result = result.replace('%s', withText);
+        }
+      }
+
+      return result;
+    }
+
+    // Return the translation key if no template found
+    return translationKey;
+  }
+
+  return '';
+}
+
+/**
  * Handles the 'join' event
  * @param {Object} client - Bot client instance
  * @param {ConnectionManager} connectionManager - Connection manager instance
@@ -59,10 +110,10 @@ export function handleText(packet, client, gamertag, debug = false) {
     try {
       const jsonData = JSON.parse(packet.message);
       if (jsonData.rawtext && Array.isArray(jsonData.rawtext)) {
-        const textParts = jsonData.rawtext.map((item) => item.text || '').join('');
+        const textParts = jsonData.rawtext.map((item) => processRawtextItem(item)).join('');
         // Strip Minecraft formatting codes from the text
         const cleanText = textParts.replace(/§[0-9a-fk-or]/g, '');
-        console.log(`[json_whisper] ${cleanText}`);
+        console.log(`[info] ${cleanText}`);
       } else {
         console.log(`[json_whisper] Unknown: ${packet.message}`);
       }

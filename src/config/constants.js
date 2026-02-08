@@ -67,6 +67,11 @@ export const TRANSLATION_MESSAGES = {
   'multiplayer.player.changeToPersona': '%s edited the character appearance.',
   'multiplayer.player.changeToSkin': '%s has changed their skin.',
   'multiplayer.playersSkippingNight': 'Sleeping through this night',
+  'gameMode.changed': 'Your game mode has been updated to %s',
+  'createWorldScreen.gameMode.survival': 'Survival',
+  'createWorldScreen.gameMode.creative': 'Creative',
+  'createWorldScreen.gameMode.adventure': 'Adventure',
+  'createWorldScreen.gameMode.spectator': 'Spectator',
 };
 
 /**
