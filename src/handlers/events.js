@@ -52,7 +52,25 @@ export function handleJoin(client, connectionManager) {
 export function handleText(packet, client, gamertag, debug = false) {
   if (debug) console.log(JSON.stringify(packet, null, 2));
 
-  if (packet.source_name === gamertag || packet.type === 'json') return;
+  if (packet.source_name === gamertag) return;
+
+  // Handle JSON whisper messages
+  if (packet.type === 'json') {
+    try {
+      const jsonData = JSON.parse(packet.message);
+      if (jsonData.rawtext && Array.isArray(jsonData.rawtext)) {
+        const textParts = jsonData.rawtext.map((item) => item.text || '').join('');
+        // Strip Minecraft formatting codes from the text
+        const cleanText = textParts.replace(/§[0-9a-fk-or]/g, '');
+        console.log(`[json_whisper] ${cleanText}`);
+      } else {
+        console.log(`[json_whisper] Unknown: ${packet.message}`);
+      }
+    } catch (err) {
+      console.log(`[json_whisper] Unknown: ${packet.message}`);
+    }
+    return;
+  }
 
   // Handle translation messages (with or without parameters)
   if (packet.needs_translation) {
