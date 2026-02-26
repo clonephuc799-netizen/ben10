@@ -17,6 +17,6 @@
   "author": "F4NK#, Wverrr",
   "license": "CC0-1.0",
   "dependencies": {
-    "bedrock-protocol": "^3.52.0"
+    "bedrock-protocol": "latest"
   }
 }
