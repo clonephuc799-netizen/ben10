@@ -1,22 +1,11 @@
 {
   "name": "bedrock-bot",
   "version": "1.0.0",
-  "description": "An automated AFK solution for Minecraft Bedrock Edition.",
-  "main": "src/index.js",
-  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "start": "node index.js"
   },
-  "keywords": [
-    "minecraft",
-    "bedrock",
-    "bot",
-    "minecraft-bot"
-  ],
-  "author": "F4NK#, Wverrr",
-  "license": "CC0-1.0",
   "dependencies": {
-    "bedrock-protocol": "latest"
+    "bedrock-protocol": "^3.30.0"
   }
 }
