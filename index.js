@@ -1,45 +1,52 @@
 const bedrock = require('bedrock-protocol')
 const config = require('./config.json')
 
+let client;
+
 function startBot() {
-  const client = bedrock.createClient({
+  client = bedrock.createClient({
     host: config.host,
     port: config.port,
     username: config.gamertag,
-    offline: true   // 🔥 FIX: không login Microsoft
+
+    // ⚠️ ép version (rất quan trọng)
+    version: '1.20.0',
+
+    offline: true,
+
+    // fix handshake
+    skipPing: false
   })
 
   client.on('join', () => {
-    console.log('joined')
+    console.log('✅ Bot đã vào server')
 
-    // Anti-AFK: di chuyển nhẹ mỗi 15s
+    // giữ AFK
     setInterval(() => {
-      try {
-        client.queue('move_player', {
-          runtime_id: client.runtime_id,
-          position: {
-            x: Math.random() * 5,
-            y: 100,
-            z: Math.random() * 5
-          },
-          pitch: 0,
-          yaw: Math.random() * 360,
-          head_yaw: Math.random() * 360,
-          mode: 0,
-          on_ground: true,
-          ridden_runtime_id: 0
-        })
-      } catch (e) {}
-    }, 15000)
+      client.write('player_auth_input', {
+        pitch: 0,
+        yaw: 0,
+        position: client.entity.position,
+        moveVector: { x: 0, z: 0 },
+        inputs: 0
+      })
+    }, 2000)
   })
 
-  client.on('disconnect', () => {
-    console.log('disconnected → reconnect')
+  client.on('spawn', () => {
+    console.log('🎮 Spawn thành công')
+  })
+
+  client.on('disconnect', (packet) => {
+    console.log('❌ Disconnected:', packet.reason)
+
+    console.log('🔁 Reconnect sau', config.reconnect, 'giây')
+
     setTimeout(startBot, config.reconnect * 1000)
   })
 
   client.on('error', (err) => {
-    console.log('error:', err.message)
+    console.log('⚠️ Error:', err)
   })
 }
 
