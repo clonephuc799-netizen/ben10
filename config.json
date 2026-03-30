@@ -1,8 +1,8 @@
 {
   "host": "ben10407.progamer.me",
   "port": 43884,
-  "gamertag": "AFK_Bot",
+  "gamertag": "AFK_Bot_01",
   "reconnect": 10,
   "offline": true,
-  "debug": false
+  "debug": true
 }
